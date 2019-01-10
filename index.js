@@ -55,6 +55,8 @@ class ProgressBar {
     }
     this.bindedSetSizes = this.setSizes.bind(this);
     window.addEventListener('resize', this.bindedSetSizes);
+    this.bindedMouseMove = this.onMouseMove.bind(this);
+    this.bindedMouseUp = this.onMouseUp.bind(this);
   }
   
   removeListeners() {
@@ -76,11 +78,10 @@ class ProgressBar {
     window.removeEventListener('resize', this.bindedSetSizes);
   }
   
-  // todo get with w/o jquery
   setSizes(){
     if (this.back) {
-      this.width = $(this.back).width();
-      this.left = $(this.back).offset().left;
+      this.width = document.querySelector(this.back).offsetWidth;
+      this.left = document.querySelector(this.back).offsetLeft;
       this.right = this.left + this.width;
     }
   }
@@ -132,138 +133,92 @@ class ProgressBar {
   }
   
   onMouseDown(e) {
-    document.addEventListener('mousemove', this.onMouseMove.bind(this);
-    document.addEventListener('mouseup', this.onMouseUp.bind(this);
+    document.addEventListener('mousemove', this.bindedMouseMove);
+    document.addEventListener('mouseup', this.bindedMouseUp);
     this.isSeeking = true;
     e.preventDefault();
+  }
+  
+  onMouseMove(e) {
+    let x = e.clientX;
+    if (x < this.left) {
+      x = this.left;
+    }
+    if (x > this.right) {
+      x = this.right;
+    }
+    this.seekLeft = x - this.left;
+  }
+  
+  onMouseUp(e) {
+    document.removeEventListener('mousemove', this.bindedMouseMove);
+    document.removeEventListener('mouseup', this.bindedMouseUp);
+    this.isSeeking = false;
+    const percentage = this.seekLeft / this.width;
+    this.seek(percentage);
+  }
+  
+  onClick = function(e){
+    this.onMouseMove(e);
+    const percentage = this.seekLeft / this.width;
+    this.seek(percentage);
+  }
+  
+  seek(percentage) {
+    if (this.playQueue){
+      this.playQueue.seek(percentage);
+    } else if (this.audio){
+      if (!isNaN(this.audio.duration)) {
+        this.audio.currentTime = Math.floor(percentage * this.audio.duration);
+      }
+    }
+  }
+  
+  getMMSS(secs) {
+    let s = secs % 60;
+    if (s < 10) {
+      s = `0${s}`;
+    }
+    return `${Math.floor(secs/60)}:${s}`;
+  }
+  
+  setPosition(audio) {
+    this.currentTimeText = this.getMMSS(Math.floor(audio.currentTime));
+    if (!isNaN(audio.duration)) {
+      this.durationText = this.getMMSS(Math.floor(audio.duration));
+    } else {
+      this.durationText = '...';
+    } 
+    const percentage = audio.currentTime / audio.duration;
+    if (this.isSeeking == false) {
+      if ((this.width * percentage) > 0) {
+        this.thumbLeft = this.width * percentage;
+      }
+      this.frontWidth = (100 * percentage) - 100;
+    }
+    this.requestAnimationFrame(this.draw);
+  }
+   
+  update() {
+    this.setPosition(this.audio);
+  }
+  
+  draw() {
+    document.querySelector(this.count).innerText = this.currentTimeText;
+    document.querySelector(this.duration).innerText = this.durationText;
+    document.querySelector(this.timeBreak).innerText = this.timeBreakText;
+    document.querySelector(this.front).style.transform = 'translateX('+this.frontWidth+'%)';
+    document.querySelector(this.loadingProgress).style.transform = 'translateX('+this.percentageWidth+'%)';
+    if (this.thumb) {
+      document.querySelector(this.thumb).style.left = this.thumbLeft;
+    };
+  }
+  
+  requestAnimationFrame(fn) {
+    window.requestAnimationFrame(fn.bind(this));
   }
   
   
 }
 
 export {ProgressBar};
-
-
-
-
-
-
-
-// mouseMove on thumb listener
-ProgressBar.prototype.mouseMove = function(e){
-    var x = e.clientX;
-    if(x < this.left){
-        x = this.left;
-    }
-    if(x > this.right){
-        x = this.right;
-    }
-    this.seekLeft = x - this.left;
-    //$(this.thumb).css("left", this.seekLeft);
-    //$(this.front).css("width", this.seekLeft);
-}
-
-// mouseUp on thumb listener
-ProgressBar.prototype.mouseUp = function(e){
-    $(document).unbind(
-        'mousemove', 
-        $.proxy(this, 'mouseMove')
-    );
-    $(document).unbind(
-        'mouseup', 
-        $.proxy(this, 'mouseUp')
-    );
-    this.isSeeking = false;
-    var percentage = this.seekLeft / this.width;
-    this.seek(percentage);
-}
-
-// click on front and back listener
-ProgressBar.prototype.click = function(e){
-    this.mouseMove(e);
-    var percentage = this.seekLeft / this.width;
-    this.seek(percentage);
-}
-
-// user seeked. Call playQueue or audio directly
-ProgressBar.prototype.seek = function(percentage){
-    if(this.playQueue){
-        this.playQueue.seek(percentage);
-    }
-    else{
-        if(this.audio){
-            if (!isNaN(this.audio.duration)){
-                this.audio.currentTime = Math.floor(percentage * this.audio.duration);
-            }
-        }
-    }
-}
-
-// return integer as minutes:seconds
-ProgressBar.prototype.getMMSS = function (secs) {
-    var s = secs % 60;
-    if (s < 10) {
-        s = "0" + s;
-    }
-    return Math.floor(secs/60) + ":" + s;
-}
-
-// set positions and time
-ProgressBar.prototype.setPosition = function(audio){
-    this.currentTimeText = this.getMMSS(Math.floor(audio.currentTime));
-    if(!isNaN(audio.duration)){
-        this.durationText = this.getMMSS(Math.floor(audio.duration));
-    } 
-    else{
-        this.durationText = '...';
-    } 
-    var percentage = audio.currentTime / audio.duration;
-    if(this.isSeeking == false) {
-        if((this.width * percentage) > 0){
-            this.thumbLeft = this.width * percentage;
-        }
-        this.frontWidth = (100 * percentage) - 100;
-    }
-    this.requestAnimationFrame(this.draw);
-}
-
-// manually call this to update position 
-ProgressBar.prototype.update = function(){
-    this.setPosition(this.audio);
-}
-
-// draw the dom changes
-ProgressBar.prototype.draw = function() {
-    $(this.count).text(this.currentTimeText);
-    $(this.duration).text(this.durationText);
-    $(this.timeBreak).text(this.timeBreakText);
-    $(this.front).css('-webkit-transform', 'translateX('+this.frontWidth+'%)');
-    $(this.loadingProgress).css('-webkit-transform', 'translateX('+this.percentageWidth+'%)');
-    if(this.thumb){
-        $(this.thumb).css('left', this.thumbLeft);
-    };
-}
-
-// only use rAF if we've got it
-ProgressBar.prototype.requestAnimationFrame = function(func){
-    var rAF = window.requestAnimationFrame || 
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame;
-    if(rAF){
-        rAF($.proxy(func, this));
-    }
-    else{
-        func.call(this);
-    }
-}
-
-
-// check if we've got require
-if(typeof module !== "undefined"){
-    module.exports = ProgressBar;
-}
-else{
-    window.ProgressBar = ProgressBar;
-}
-
-}()); // end wrapper
