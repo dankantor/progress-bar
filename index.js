@@ -1,32 +1,58 @@
 class ProgressBar {
   
   constructor(opts) {
-    this.hideClass = 'display_none';
-    this.loadingClass = 'loading';
-    Object.assign(this, opts);
-    if (this.playQueue) {
-      this.audio = this.playQueue.audio;
+    this.hideClass = 'display_none' || opts.hideClass;
+    this.loadingClass = 'loading' || opts.loadingClass;
+    // Object.assign(this, opts);
+    if (opts.playQueue) {
+      this.playQueue = opts.playQueue;
+      this.audio = opts.playQueue.audio;
+    } else if (opts.audio) {
+      this.audio = opts.audio;
     }
     this.isSeeking = false;
+    this.cacheElements(opts);
     this.addListeners();
     this.setSizes();
+  }
+  
+  cacheElements(opts) {
+    if (opts.back) {
+      this.back = document.querySelector(opts.back);
+    }
+    if (opts.front) {
+      this.front = document.querySelector(opts.front);
+    }
+    if (opts.thumb) {
+      this.thumb = document.querySelector(opts.thumb);
+    }
+    if (opts.count) {
+      this.count = document.querySelector(opts.count);
+    }
+    if (opts.duration) {
+      this.duration = document.querySelector(opts.duration);
+    }
+    if (opts.timeBreak) {
+      this.timeBreak = document.querySelector(opts.timeBreak);
+    }
+    
   }
   
   addListeners() {
     this.removeListeners();
     if (this.back) {
       this.bindedBackClick = this.onClick.bind(this);
-      document.querySelector(this.back).addEventListener('click', this.bindedBackClick);
+      this.back.addEventListener('click', this.bindedBackClick);
     }
     if (this.front) {
       this.bindedFrontClick = this.onClick.bind(this);
-      document.querySelector(this.front).addEventListener('click', this.bindedFrontClick);
+      this.front.addEventListener('click', this.bindedFrontClick);
     }
     if (this.thumb) {
       this.bindedThumbDown = this.onMouseDown.bind(this);
-      document.querySelector(this.thumb).addEventListener('mousedown', this.bindedThumbDown);
+      this.thumb.addEventListener('mousedown', this.bindedThumbDown);
       this.bindedThumbUp = this.onMouseUp.bind(this);
-      document.querySelector(this.thumb).addEventListener('mouseup', this.bindedThumbUp);
+      this.thumb.addEventListener('mouseup', this.bindedThumbUp);
     }
     if (this.playQueue) {
       this.bindedPlayQueueLoading = this.onLoading.bind(this);
@@ -60,10 +86,16 @@ class ProgressBar {
   }
   
   removeListeners() {
-    document.querySelector(this.back).removeEventListener('click', this.bindedBackClick);
-    document.querySelector(this.front).removeEventListener('click', this.bindedFrontClick);
-    document.querySelector(this.thumb).removeEventListener('mousedown', this.bindedThumbDown);
-    document.querySelector(this.thumb).removeEventListener('mouseup', this.bindedThumbUp);
+    if (this.back) {
+      this.back.removeEventListener('click', this.bindedBackClick);
+    }
+    if (this.front) {
+      this.front.removeEventListener('click', this.bindedFrontClick);
+    }
+    if (this.thumb) {
+      this.thumb.removeEventListener('mousedown', this.bindedThumbDown);
+      this.thumb.removeEventListener('mouseup', this.bindedThumbUp);
+    }
     if (this.playQueue) {
       this.playQueue.off('loading', this.bindedPlayQueueLoading);
       this.playQueue.off('playing', this.bindedPlayQueuePlaying);
@@ -80,15 +112,19 @@ class ProgressBar {
   
   setSizes(){
     if (this.back) {
-      this.width = document.querySelector(this.back).offsetWidth;
-      this.left = document.querySelector(this.back).offsetLeft;
+      this.width = this.back.offsetWidth;
+      this.left = this.back.offsetLeft;
       this.right = this.left + this.width;
     }
   }
   
   reset() {
-    document.querySelector(this.thumb).classList.add(this.hideClass);
-    document.querySelector(this.front).classList.add(this.hideClass);
+    if (this.thumb) {
+      this.thumb.classList.add(this.hideClass);
+    }
+    if (this.front) {
+      this.front.classList.add(this.hideClass);
+    }
     this.currentTimeText = '0:00';
     this.durationText = '0:00'; 
     this.timeBreakText = '';
@@ -100,14 +136,22 @@ class ProgressBar {
   
   onLoading(e) {
     this.reset()
-    document.querySelector(this.back).classList.add(this.loadingClass);
+    if (this.back) {
+      this.back.classList.add(this.loadingClass);
+    }
     this.timeBreakText = "/";
   }
   
   onPlaying(e) {
-    document.querySelector(this.thumb).classList.remove(this.hideClass);
-    document.querySelector(this.front).classList.remove(this.hideClass);
-    document.querySelector(this.back).classList.remove(this.loadingClass);
+    if (this.thumb) {
+      this.thumb.classList.remove(this.hideClass);
+    }
+    if (this.front) {
+      this.front.classList.remove(this.hideClass);
+    }
+    if (this.back) {
+      this.back.classList.remove(this.loadingClass);
+    }
   }
   
   onTimeUpdate(e) {
@@ -120,11 +164,15 @@ class ProgressBar {
   }
   
   onSeeking(e) {
-    document.querySelector(this.back).classList.add(this.loadingClass);
+    if (this.back) {
+      this.back.classList.add(this.loadingClass);
+    }
   }
   
   onSeeked(e) {
-    document.querySelector(this.back).classList.remove(this.loadingClass);
+    if (this.back) {
+      this.back.classList.remove(this.loadingClass);
+    }
   }
   
   onProgress(e) {
@@ -158,7 +206,7 @@ class ProgressBar {
     this.seek(percentage);
   }
   
-  onClick = function(e){
+  onClick(e) {
     this.onMouseMove(e);
     const percentage = this.seekLeft / this.width;
     this.seek(percentage);
@@ -204,13 +252,23 @@ class ProgressBar {
   }
   
   draw() {
-    document.querySelector(this.count).innerText = this.currentTimeText;
-    document.querySelector(this.duration).innerText = this.durationText;
-    document.querySelector(this.timeBreak).innerText = this.timeBreakText;
-    document.querySelector(this.front).style.transform = 'translateX('+this.frontWidth+'%)';
-    document.querySelector(this.loadingProgress).style.transform = 'translateX('+this.percentageWidth+'%)';
+    if (this.count) {
+      this.count.innerText = this.currentTimeText;
+    }
+    if (this.duration) {
+      this.duration.innerText = this.durationText;
+    }
+    if (this.timeBreak) {
+      this.timeBreak.innerText = this.timeBreakText;
+    }
+    if (this.front) {
+      this.front.style.transform = 'translateX('+this.frontWidth+'%)';
+    }
+    if (this.loadingProgress) {
+      this.loadingProgress.style.transform = 'translateX('+this.percentageWidth+'%)';
+    }
     if (this.thumb) {
-      document.querySelector(this.thumb).style.left = this.thumbLeft;
+      this.thumb.style.left = this.thumbLeft;
     };
   }
   
