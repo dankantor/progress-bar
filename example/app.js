@@ -11,7 +11,8 @@ class App {
       'duration': '#duration',
       'timeBreak': '#time-break',
       'front': '#progress-front',
-      'back': '#progress-back'
+      'back': '#progress-back',
+      'thumb': '#thumb'
     });
     document.querySelector('#play').addEventListener('click', e => {
       audio.play();

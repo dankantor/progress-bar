@@ -3,7 +3,6 @@ class ProgressBar {
   constructor(opts) {
     this.hideClass = 'display_none' || opts.hideClass;
     this.loadingClass = 'loading' || opts.loadingClass;
-    // Object.assign(this, opts);
     if (opts.playQueue) {
       this.playQueue = opts.playQueue;
       this.audio = opts.playQueue.audio;
@@ -262,13 +261,13 @@ class ProgressBar {
       this.timeBreak.innerText = this.timeBreakText;
     }
     if (this.front) {
-      this.front.style.transform = 'translateX('+this.frontWidth+'%)';
+      this.front.style.transform = `translateX(${this.frontWidth}%)`;
     }
     if (this.loadingProgress) {
-      this.loadingProgress.style.transform = 'translateX('+this.percentageWidth+'%)';
+      this.loadingProgress.style.transform = `translateX(${this.percentageWidth}%)`;
     }
     if (this.thumb) {
-      this.thumb.style.left = this.thumbLeft;
+      this.thumb.style.transform = `translateX(${this.thumbLeft-5}px)`;
     };
   }
   

@@ -26,7 +26,8 @@ npm install audio-progress-bar
     'duration': '#duration',
     'timeBreak': '#time-break',
     'front': '#progress-front',
-    'back': '#progress-back'
+    'back': '#progress-back',
+    'thumb': '#thumb'
   });
 ```
 
