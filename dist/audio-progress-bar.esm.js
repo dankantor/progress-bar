@@ -8,7 +8,6 @@ var ProgressBar = function () {
 
     this.hideClass = 'display_none' || opts.hideClass;
     this.loadingClass = 'loading' || opts.loadingClass;
-    // Object.assign(this, opts);
     if (opts.playQueue) {
       this.playQueue = opts.playQueue;
       this.audio = opts.playQueue.audio;
@@ -46,7 +45,6 @@ var ProgressBar = function () {
   }, {
     key: 'addListeners',
     value: function addListeners() {
-      this.removeListeners();
       if (this.back) {
         this.bindedBackClick = this.onClick.bind(this);
         this.back.addEventListener('click', this.bindedBackClick);
@@ -90,32 +88,6 @@ var ProgressBar = function () {
       window.addEventListener('resize', this.bindedSetSizes);
       this.bindedMouseMove = this.onMouseMove.bind(this);
       this.bindedMouseUp = this.onMouseUp.bind(this);
-    }
-  }, {
-    key: 'removeListeners',
-    value: function removeListeners() {
-      if (this.back) {
-        this.back.removeEventListener('click', this.bindedBackClick);
-      }
-      if (this.front) {
-        this.front.removeEventListener('click', this.bindedFrontClick);
-      }
-      if (this.thumb) {
-        this.thumb.removeEventListener('mousedown', this.bindedThumbDown);
-        this.thumb.removeEventListener('mouseup', this.bindedThumbUp);
-      }
-      if (this.playQueue) {
-        this.playQueue.off('loading', this.bindedPlayQueueLoading);
-        this.playQueue.off('playing', this.bindedPlayQueuePlaying);
-      }
-      this.audio.removeEventListener('loadstart', this.bindedAudioLoading);
-      this.audio.removeEventListener('canplay', this.bindedAudioPlaying);
-      this.audio.removeEventListener('timeupdate', this.bindedTimeUpdate);
-      this.audio.removeEventListener('durationchange', this.bindedDurationChange);
-      this.audio.removeEventListener('seeking', this.bindedSeeking);
-      this.audio.removeEventListener('seeked', this.bindedSeeked);
-      this.audio.removeEventListener('progress', this.bindedProgress);
-      window.removeEventListener('resize', this.bindedSetSizes);
     }
   }, {
     key: 'setSizes',
@@ -294,7 +266,7 @@ var ProgressBar = function () {
         this.loadingProgress.style.transform = 'translateX(' + this.percentageWidth + '%)';
       }
       if (this.thumb) {
-        this.thumb.style.left = this.thumbLeft;
+        this.thumb.style.transform = 'translateX(' + (this.thumbLeft - 5) + 'px)';
       }
     }
   }, {
