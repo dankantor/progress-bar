@@ -13,7 +13,7 @@ class ProgressBar {
     this.cacheElements(opts);
     this.addListeners();
     this.setSizes();
-    this.setTimeout(this.setSizes, 1000);
+    setTimeout(this.setSizes, 1000);
   }
   
   cacheElements(opts) {
@@ -216,7 +216,7 @@ class ProgressBar {
       this.thumbLeft = this.width * percentage - this.thumbWidth;
       if (this.thumbLeft < 0) {
         this.thumbLeft = 0;
-      }		        }
+      }
       this.frontWidth = (100 * percentage) - 100;
     }
     this.requestAnimationFrame(this.draw);
