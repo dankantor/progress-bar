@@ -22,6 +22,7 @@ var ProgressBar = function () {
     this.cacheElements(opts);
     this.addListeners();
     this.setSizes();
+    setTimeout(this.setSizes, 1000);
   }
 
   _createClass(ProgressBar, [{
@@ -32,6 +33,7 @@ var ProgressBar = function () {
       }
       if (opts.front) {
         this.front = document.querySelector(opts.front);
+        this.front.style.pointerEvents = 'none';
       }
       if (opts.thumb) {
         this.thumb = document.querySelector(opts.thumb);
@@ -52,10 +54,6 @@ var ProgressBar = function () {
       if (this.back) {
         this.bindedBackClick = this.onClick.bind(this);
         this.back.addEventListener('click', this.bindedBackClick);
-      }
-      if (this.front) {
-        this.bindedFrontClick = this.onClick.bind(this);
-        this.front.addEventListener('click', this.bindedFrontClick);
       }
       if (this.thumb) {
         this.bindedThumbDown = this.onMouseDown.bind(this);
@@ -101,6 +99,9 @@ var ProgressBar = function () {
         this.left = this.back.offsetLeft;
         this.right = this.left + this.width;
       }
+      if (this.thumb) {
+        this.thumbWidth = this.thumb.offsetWidth;
+      }
     }
   }, {
     key: 'reset',
@@ -131,6 +132,7 @@ var ProgressBar = function () {
   }, {
     key: 'onPlaying',
     value: function onPlaying(e) {
+      this.setSizes();
       if (this.thumb) {
         this.thumb.classList.remove(this.hideClass);
       }
@@ -204,8 +206,7 @@ var ProgressBar = function () {
   }, {
     key: 'onClick',
     value: function onClick(e) {
-      this.onMouseMove(e);
-      var percentage = this.seekLeft / this.width;
+      var percentage = e.offsetX / this.width;
       this.seek(percentage);
     }
   }, {
@@ -239,8 +240,9 @@ var ProgressBar = function () {
       }
       var percentage = audio.currentTime / audio.duration;
       if (this.isSeeking == false) {
-        if (this.width * percentage > 0) {
-          this.thumbLeft = this.width * percentage;
+        this.thumbLeft = this.width * percentage - this.thumbWidth;
+        if (this.thumbLeft < 0) {
+          this.thumbLeft = 0;
         }
         this.frontWidth = 100 * percentage - 100;
       }
@@ -270,7 +272,7 @@ var ProgressBar = function () {
         this.loadingProgress.style.transform = 'translateX(' + this.percentageWidth + '%)';
       }
       if (this.thumb) {
-        this.thumb.style.transform = 'translateX(' + (this.thumbLeft - 5) + 'px)';
+        this.thumb.style.transform = 'translateX(' + this.thumbLeft + 'px)';
       }
     }
   }, {
