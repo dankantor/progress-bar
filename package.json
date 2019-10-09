@@ -2,7 +2,7 @@
   "author": "Dan Kantor <dan@ex.fm>",
   "name": "audio-progress-bar",
   "description": "",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/audio-progress-bar.cjs.js",
   "module": "dist/audio-progress-bar.esm.js",
   "browser": "dist/audio-progress-bar.umd.js",

@@ -29,7 +29,9 @@ var ProgressBar = function () {
       }
       if (opts.front) {
         this.front = document.querySelector(opts.front);
-        this.front.style.pointerEvents = 'none';
+        if (this.front) {
+          this.front.style.pointerEvents = 'none';
+        }
       }
       if (opts.thumb) {
         this.thumb = document.querySelector(opts.thumb);
