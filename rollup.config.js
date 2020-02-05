@@ -9,7 +9,7 @@ export default [
 		entry: 'index.js',
 		dest: pkg.browser,
 		format: 'umd',
-		moduleName: 'audio-controls',
+		moduleName: 'progress-bar',
 		plugins: [
   		resolve(),
   		commonjs(),

@@ -10,6 +10,7 @@ var ProgressBar = function () {
   function ProgressBar(opts) {
     _classCallCheck(this, ProgressBar);
 
+    console.log(1);
     this.hideClass = 'display_none' || opts.hideClass;
     this.loadingClass = 'loading' || opts.loadingClass;
     if (opts.playQueue) {
@@ -224,12 +225,27 @@ var ProgressBar = function () {
     }
   }, {
     key: 'getMMSS',
-    value: function getMMSS(secs) {
-      var s = secs % 60;
-      if (s < 10) {
-        s = '0' + s;
+    value: function getMMSS(totalSeconds) {
+      if (isNaN(totalSeconds) === false) {
+        var hours = Math.floor(totalSeconds / 3600);
+        totalSeconds %= 3600;
+        var minutes = Math.floor(totalSeconds / 60);
+        var seconds = totalSeconds % 60;
+        var hourStr = '';
+        var minStr = minutes;
+        var secStr = seconds;
+        if (hours > 0) {
+          hourStr = hours + ':';
+          if (minutes < 10) {
+            minStr = '0' + minutes;
+          }
+        }
+        if (seconds < 10) {
+          secStr = '0' + seconds;
+        }
+        return '' + hourStr + minStr + ':' + secStr;
       }
-      return Math.floor(secs / 60) + ':' + s;
+      return '';
     }
   }, {
     key: 'setPosition',
