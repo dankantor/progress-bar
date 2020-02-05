@@ -198,12 +198,27 @@ class ProgressBar {
     }
   }
   
-  getMMSS(secs) {
-    let s = secs % 60;
-    if (s < 10) {
-      s = `0${s}`;
-    }
-    return `${Math.floor(secs/60)}:${s}`;
+  getMMSS(totalSeconds) {
+    if (isNaN(totalSeconds) === false) {
+      let hours = Math.floor(totalSeconds / 3600);
+      totalSeconds %= 3600;
+      let minutes = Math.floor(totalSeconds / 60);
+      let seconds = totalSeconds % 60;
+      let hourStr = '';
+      let minStr = minutes;
+      let secStr = seconds;
+      if (hours > 0) {
+        hourStr = `${hours}:`;
+        if (minutes < 10) {
+          minStr = `0${minutes}`;
+        }
+      }
+      if (seconds < 10) {
+        secStr = `0${seconds}`;
+      }
+      return `${hourStr}${minStr}:${secStr}`;
+    } 
+    return '';
   }
   
   setPosition(audio) {
