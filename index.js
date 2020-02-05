@@ -1,7 +1,6 @@
 class ProgressBar {
   
   constructor(opts) {
-    console.log(1);
     this.hideClass = 'display_none' || opts.hideClass;
     this.loadingClass = 'loading' || opts.loadingClass;
     if (opts.playQueue) {
