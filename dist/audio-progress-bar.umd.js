@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global['audio-controls'] = {})));
+	(factory((global['progress-bar'] = {})));
 }(this, (function (exports) { 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -12,7 +12,6 @@ var ProgressBar = function () {
   function ProgressBar(opts) {
     _classCallCheck(this, ProgressBar);
 
-    console.log(1);
     this.hideClass = 'display_none' || opts.hideClass;
     this.loadingClass = 'loading' || opts.loadingClass;
     if (opts.playQueue) {
