@@ -301,18 +301,6 @@ var ProgressBar = function () {
       }
     }
   }, {
-    key: 'drawSeek',
-    value: function drawSeek() {
-      /*
-          if (this.front) {
-            this.front.style.transform = `translateX(${this.frontWidth}%)`;
-          }
-      */
-      if (this.thumb) {
-        this.thumb.style.transform = 'translateX(' + this.thumbLeft + 'px)';
-      }
-    }
-  }, {
     key: 'requestAnimationFrame',
     value: function requestAnimationFrame(fn) {
       window.requestAnimationFrame(fn.bind(this));
