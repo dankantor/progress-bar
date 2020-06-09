@@ -99,8 +99,9 @@ var ProgressBar = function () {
     key: 'setSizes',
     value: function setSizes() {
       if (this.back) {
-        this.width = this.back.offsetWidth;
-        this.left = this.back.offsetLeft;
+        var parent = this.back.offsetParent;
+        this.width = parent.offsetWidth;
+        this.left = parent.offsetLeft;
         this.right = this.left + this.width;
       }
       if (this.thumb) {
@@ -122,6 +123,7 @@ var ProgressBar = function () {
       this.thumbLeft = 0;
       this.frontWidth = -101;
       this.percentageWidth = -100;
+      this.isSeeking = false;
       this.requestAnimationFrame(this.draw);
     }
   }, {
@@ -197,6 +199,16 @@ var ProgressBar = function () {
         x = this.right;
       }
       this.seekLeft = x - this.left;
+      var seekPercentage = this.seekLeft / this.width;
+      var seekedSeconds = this.audio.duration * seekPercentage;
+      this.currentTimeText = this.getMMSS(Math.floor(seekedSeconds));
+      var percentage = seekedSeconds / this.audio.duration;
+      this.thumbLeft = this.width * percentage - this.thumbWidth;
+      if (this.thumbLeft < 0) {
+        this.thumbLeft = 0;
+      }
+      this.frontWidth = 100 * percentage - 100;
+      this.requestAnimationFrame(this.draw);
     }
   }, {
     key: 'onMouseUp',
@@ -264,8 +276,8 @@ var ProgressBar = function () {
           this.thumbLeft = 0;
         }
         this.frontWidth = 100 * percentage - 100;
+        this.requestAnimationFrame(this.draw);
       }
-      this.requestAnimationFrame(this.draw);
     }
   }, {
     key: 'update',
@@ -290,6 +302,18 @@ var ProgressBar = function () {
       if (this.loadingProgress) {
         this.loadingProgress.style.transform = 'translateX(' + this.percentageWidth + '%)';
       }
+      if (this.thumb) {
+        this.thumb.style.transform = 'translateX(' + this.thumbLeft + 'px)';
+      }
+    }
+  }, {
+    key: 'drawSeek',
+    value: function drawSeek() {
+      /*
+          if (this.front) {
+            this.front.style.transform = `translateX(${this.frontWidth}%)`;
+          }
+      */
       if (this.thumb) {
         this.thumb.style.transform = 'translateX(' + this.thumbLeft + 'px)';
       }

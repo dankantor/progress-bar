@@ -85,8 +85,9 @@ class ProgressBar {
   
   setSizes(){
     if (this.back) {
-      this.width = this.back.offsetWidth;
-      this.left = this.back.offsetLeft;
+      let parent = this.back.offsetParent;
+      this.width = parent.offsetWidth;
+      this.left = parent.offsetLeft;
       this.right = this.left + this.width;
     }
     if (this.thumb) {
@@ -107,6 +108,7 @@ class ProgressBar {
     this.thumbLeft = 0;
     this.frontWidth = -101;
     this.percentageWidth = -100;
+    this.isSeeking = false;
     this.requestAnimationFrame(this.draw);
   }
   
@@ -173,6 +175,16 @@ class ProgressBar {
       x = this.right;
     }
     this.seekLeft = x - this.left;
+    const seekPercentage = this.seekLeft / this.width;
+    const seekedSeconds = this.audio.duration * seekPercentage;
+    this.currentTimeText = this.getMMSS(Math.floor(seekedSeconds));
+    const percentage = seekedSeconds / this.audio.duration;
+    this.thumbLeft = this.width * percentage - this.thumbWidth;
+    if (this.thumbLeft < 0) {
+      this.thumbLeft = 0;
+    }
+    this.frontWidth = (100 * percentage) - 100;
+    this.requestAnimationFrame(this.draw);
   }
   
   onMouseUp(e) {
@@ -235,8 +247,8 @@ class ProgressBar {
         this.thumbLeft = 0;
       }
       this.frontWidth = (100 * percentage) - 100;
+      this.requestAnimationFrame(this.draw);
     }
-    this.requestAnimationFrame(this.draw);
   }
    
   update() {
@@ -259,6 +271,17 @@ class ProgressBar {
     if (this.loadingProgress) {
       this.loadingProgress.style.transform = `translateX(${this.percentageWidth}%)`;
     }
+    if (this.thumb) {
+      this.thumb.style.transform = `translateX(${this.thumbLeft}px)`;
+    };
+  }
+  
+  drawSeek() {
+/*
+    if (this.front) {
+      this.front.style.transform = `translateX(${this.frontWidth}%)`;
+    }
+*/
     if (this.thumb) {
       this.thumb.style.transform = `translateX(${this.thumbLeft}px)`;
     };
