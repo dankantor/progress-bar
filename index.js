@@ -85,9 +85,12 @@ class ProgressBar {
   
   setSizes(){
     if (this.back) {
-      let parent = this.back.offsetParent;
-      this.width = parent.offsetWidth;
-      this.left = parent.offsetLeft;
+      let el = this.back;
+      if (this.back.offsetParent) {
+        el = this.back.offsetParent;
+      }
+      this.width = el.offsetWidth;
+      this.left = el.offsetLeft;
       this.right = this.left + this.width;
     }
     if (this.thumb) {

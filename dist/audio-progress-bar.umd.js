@@ -99,9 +99,12 @@ var ProgressBar = function () {
     key: 'setSizes',
     value: function setSizes() {
       if (this.back) {
-        var parent = this.back.offsetParent;
-        this.width = parent.offsetWidth;
-        this.left = parent.offsetLeft;
+        var el = this.back;
+        if (this.back.offsetParent) {
+          el = this.back.offsetParent;
+        }
+        this.width = el.offsetWidth;
+        this.left = el.offsetLeft;
         this.right = this.left + this.width;
       }
       if (this.thumb) {
