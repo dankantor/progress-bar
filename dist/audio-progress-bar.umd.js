@@ -55,15 +55,16 @@ var ProgressBar = function () {
   }, {
     key: 'addListeners',
     value: function addListeners() {
+
       if (this.back) {
         this.bindedBackClick = this.onClick.bind(this);
-        this.back.addEventListener('click', this.bindedBackClick);
+        this.back.addEventListener(this.pointerEvents.click, this.bindedBackClick);
       }
       if (this.thumb) {
         this.bindedThumbDown = this.onMouseDown.bind(this);
-        this.thumb.addEventListener('mousedown', this.bindedThumbDown);
+        this.thumb.addEventListener(this.pointerEvents.down, this.bindedThumbDown);
         this.bindedThumbUp = this.onMouseUp.bind(this);
-        this.thumb.addEventListener('mouseup', this.bindedThumbUp);
+        this.thumb.addEventListener(this.pointerEvents.up, this.bindedThumbUp);
       }
       if (this.playQueue) {
         this.bindedPlayQueueLoading = this.onLoading.bind(this);
@@ -186,8 +187,8 @@ var ProgressBar = function () {
   }, {
     key: 'onMouseDown',
     value: function onMouseDown(e) {
-      document.addEventListener('mousemove', this.bindedMouseMove);
-      document.addEventListener('mouseup', this.bindedMouseUp);
+      document.addEventListener(this.pointerEvents.move, this.bindedMouseMove);
+      document.addEventListener(this.pointerEvents.up, this.bindedMouseUp);
       this.isSeeking = true;
       e.preventDefault();
     }
@@ -216,8 +217,8 @@ var ProgressBar = function () {
   }, {
     key: 'onMouseUp',
     value: function onMouseUp(e) {
-      document.removeEventListener('mousemove', this.bindedMouseMove);
-      document.removeEventListener('mouseup', this.bindedMouseUp);
+      document.removeEventListener(this.pointerEvents.move, this.bindedMouseMove);
+      document.removeEventListener(this.pointerEvents.up, this.bindedMouseUp);
       this.isSeeking = false;
       var percentage = this.seekLeft / this.width;
       this.seek(percentage);
@@ -313,6 +314,25 @@ var ProgressBar = function () {
     key: 'requestAnimationFrame',
     value: function requestAnimationFrame(fn) {
       window.requestAnimationFrame(fn.bind(this));
+    }
+  }, {
+    key: 'pointerEvents',
+    get: function get() {
+      var events = {
+        'click': 'click',
+        'down': 'mousedown',
+        'up': 'mouseup',
+        'move': 'mousemove'
+      };
+      if (window.PointerEvent) {
+        events = {
+          'click': 'pointerup',
+          'down': 'pointerdown',
+          'up': 'pointerup',
+          'move': 'pointermove'
+        };
+      }
+      return events;
     }
   }]);
 
