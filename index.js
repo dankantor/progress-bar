@@ -160,8 +160,14 @@ class ProgressBar {
   }
   
   onDurationChange(e) {
-    this.durationText = this.getMMSS(Math.floor(e.target.duration)); 
-    this.requestAnimationFrame(this.draw);
+    if (e.target.duration) {
+      if (e.target.duration === Infinity) {
+        this.durationText = 'Live';
+      } else {
+        this.durationText = this.getMMSS(Math.floor(e.target.duration)); 
+      }
+      this.requestAnimationFrame(this.draw);
+    }
   }
   
   onSeeking(e) {
