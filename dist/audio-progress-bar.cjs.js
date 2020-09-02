@@ -120,7 +120,7 @@ var ProgressBar = function () {
         this.front.classList.add(this.hideClass);
       }
       this.currentTimeText = '0:00';
-      this.durationText = '0:00';
+      this.durationText = '...';
       this.timeBreakText = '';
       this.thumbLeft = 0;
       this.frontWidth = -101;
@@ -159,8 +159,24 @@ var ProgressBar = function () {
   }, {
     key: 'onDurationChange',
     value: function onDurationChange(e) {
-      this.durationText = this.getMMSS(Math.floor(e.target.duration));
+      this.durationText = this.getDurationText(e.target.duration);
       this.requestAnimationFrame(this.draw);
+    }
+  }, {
+    key: 'getDurationText',
+    value: function getDurationText(audio) {
+      if (!isNaN(audio.duration)) {
+        if (audio.duration === Infinity) {
+          return 'Live';
+        } else {
+          if (audio.duration !== undefined) {
+            return this.getMMSS(Math.floor(audio.duration));
+          } else {
+            return '...';
+          }
+        }
+      }
+      return '...';
     }
   }, {
     key: 'onSeeking',
@@ -266,20 +282,18 @@ var ProgressBar = function () {
     key: 'setPosition',
     value: function setPosition(audio) {
       this.currentTimeText = this.getMMSS(Math.floor(audio.currentTime));
-      if (!isNaN(audio.duration)) {
-        this.durationText = this.getMMSS(Math.floor(audio.duration));
-      } else {
-        this.durationText = '...';
-      }
-      var percentage = audio.currentTime / audio.duration;
-      if (this.isSeeking == false) {
-        this.thumbLeft = this.width * percentage - this.thumbWidth;
-        if (this.thumbLeft < 0) {
-          this.thumbLeft = 0;
+      this.durationText = this.getDurationText(audio);
+      try {
+        var percentage = audio.currentTime / audio.duration;
+        if (this.isSeeking == false) {
+          this.thumbLeft = this.width * percentage - this.thumbWidth;
+          if (this.thumbLeft < 0) {
+            this.thumbLeft = 0;
+          }
+          this.frontWidth = 100 * percentage - 100;
         }
-        this.frontWidth = 100 * percentage - 100;
-        this.requestAnimationFrame(this.draw);
-      }
+      } catch (err) {}
+      this.requestAnimationFrame(this.draw);
     }
   }, {
     key: 'update',

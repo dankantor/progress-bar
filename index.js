@@ -125,7 +125,7 @@ class ProgressBar {
       this.front.classList.add(this.hideClass);
     }
     this.currentTimeText = '0:00';
-    this.durationText = '0:00'; 
+    this.durationText = '...'; 
     this.timeBreakText = '';
     this.thumbLeft = 0;
     this.frontWidth = -101;
@@ -160,14 +160,23 @@ class ProgressBar {
   }
   
   onDurationChange(e) {
-    if (e.target.duration) {
-      if (e.target.duration === Infinity) {
-        this.durationText = 'Live';
+    this.durationText = this.getDurationText(e.target.duration); 
+    this.requestAnimationFrame(this.draw);
+  }
+  
+  getDurationText(audio) {
+    if (!isNaN(audio.duration)) {
+      if (audio.duration === Infinity) {
+        return 'Live';
       } else {
-        this.durationText = this.getMMSS(Math.floor(e.target.duration)); 
+        if (audio.duration !== undefined) {
+          return this.getMMSS(Math.floor(audio.duration));
+        } else {
+          return '...'
+        }
       }
-      this.requestAnimationFrame(this.draw);
     }
+    return '...';
   }
   
   onSeeking(e) {
@@ -263,20 +272,20 @@ class ProgressBar {
   
   setPosition(audio) {
     this.currentTimeText = this.getMMSS(Math.floor(audio.currentTime));
-    if (!isNaN(audio.duration)) {
-      this.durationText = this.getMMSS(Math.floor(audio.duration));
-    } else {
-      this.durationText = '...';
-    } 
-    const percentage = audio.currentTime / audio.duration;
-    if (this.isSeeking == false) {
-      this.thumbLeft = this.width * percentage - this.thumbWidth;
-      if (this.thumbLeft < 0) {
-        this.thumbLeft = 0;
+    this.durationText = this.getDurationText(audio); 
+    try { 
+      const percentage = audio.currentTime / audio.duration;
+      if (this.isSeeking == false) {
+        this.thumbLeft = this.width * percentage - this.thumbWidth;
+        if (this.thumbLeft < 0) {
+          this.thumbLeft = 0;
+        }
+        this.frontWidth = (100 * percentage) - 100;
       }
-      this.frontWidth = (100 * percentage) - 100;
-      this.requestAnimationFrame(this.draw);
+    } catch (err) {
+      
     }
+    this.requestAnimationFrame(this.draw);
   }
    
   update() {
